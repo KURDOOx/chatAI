@@ -4,6 +4,7 @@ from openai import OpenAI
 # Custom CSS for flowing animation
 flowing_animation = """
 <style>
+/* Space background with animation */
 .stApp {
     background: linear-gradient(-45deg, #000428, #004e92, #000428, #004e92);
     background-size: 400% 400%;
@@ -46,7 +47,25 @@ flowing_animation = """
     padding: 10px;
     color: white; /* White text */
 }
+
+/* Robot Animation */
+.robot {
+    position: fixed;
+    bottom: 10%;
+    left: 10%;
+    width: 100px;
+    animation: moveRobot 10s linear infinite;
+}
+
+@keyframes moveRobot {
+    0% { left: 10%; transform: rotateY(0deg); }
+    50% { left: 80%; transform: rotateY(180deg); }
+    100% { left: 10%; transform: rotateY(0deg); }
+}
 </style>
+
+<!-- Robot GIF -->
+<img src="https://media.giphy.com/media/jUwpNzg9IcyrK/giphy.gif" class="robot">
 """
 
 # Inject custom CSS
