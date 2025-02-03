@@ -1,15 +1,25 @@
 import streamlit as st
 from openai import OpenAI
 
-# Custom CSS for space background
-space_background = """
+# Custom CSS for flowing animation
+flowing_animation = """
 <style>
 .stApp {
-    background-image: url("https://www.esa.int/var/esa/storage/images/esa_multimedia/images/2023/09/webb_captures_iconic_ring_nebula_in_unprecedented_detail/25100348-1-eng-GB/Webb_captures_iconic_Ring_Nebula_in_unprecedented_detail_pillars.jpg");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+    background: linear-gradient(-45deg, #000428, #004e92, #000428, #004e92);
+    background-size: 400% 400%;
+    animation: gradientFlow 15s ease infinite;
+}
+
+@keyframes gradientFlow {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 /* Style the chat messages */
@@ -40,7 +50,7 @@ space_background = """
 """
 
 # Inject custom CSS
-st.markdown(space_background, unsafe_allow_html=True)
+st.markdown(flowing_animation, unsafe_allow_html=True)
 
 # Fetch the API key from Streamlit secrets
 api_key = st.secrets["api_key"]
@@ -57,7 +67,7 @@ st.title("🚀 DeepSeek Chatbot")
 # Sidebar for settings
 with st.sidebar:
     st.header("Settings")
-    model = st.selectbox("Choose a model", ["deepseek/deepseek-r1:free", "openai/gpt-3.5-turbo"])
+    model = st.selectbox("Choose a model", ["deepseek/deepseek-r1:free", "gpt-3.5-turbo"])
     if st.button("Clear Chat"):
         st.session_state.messages = []
 
