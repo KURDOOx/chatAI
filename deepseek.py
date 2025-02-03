@@ -108,4 +108,4 @@ if prompt := st.chat_input("What is up?"):
 
 # Footer
 st.markdown("---")
-st.markdown("Built with ❤️ by [Your Name](https://your-website.com)")
+st.markdown("Built with ❤️ by OST")
