@@ -2,7 +2,7 @@ import streamlit as st
 from openai import OpenAI
 
 # Custom CSS for background, bot, and stars (without affecting chat UI)
-running_bot_animation = """
+custom_css = """
 <style>
 /* Space background with smooth animation */
 .stApp {
@@ -85,7 +85,7 @@ running_bot_animation = """
 """
 
 # Inject custom CSS
-st.markdown(running_bot_animation, unsafe_allow_html=True)
+st.markdown(custom_css, unsafe_allow_html=True)
 
 # Static HTML for stars and bot
 stars_html = "".join(
