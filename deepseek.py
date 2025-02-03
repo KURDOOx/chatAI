@@ -5,7 +5,7 @@ from openai import OpenAI
 flowing_animation = """
 <style>
 .stApp {
-    background: url('<iframe src="https://gifer.com/embed/Scpn" width=480 height=480.000 frameBorder="0" allowFullScreen></iframe><p><a href="https://gifer.com">via GIFER</a></p>') no-repeat center center fixed;
+    background: url('<iframe src=("https://i.gifer.com/Scpn.gif") no-repeat center center fixed;
     background-size: cover;
 }
 
