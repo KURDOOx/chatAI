@@ -62,7 +62,7 @@ client = OpenAI(
 )
 
 # Streamlit app UI
-st.title("🚀 DeepSeek Chatbot")
+st.title("🧀 OST Ai")
 
 # Sidebar for settings
 with st.sidebar:
