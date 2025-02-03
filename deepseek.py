@@ -2,7 +2,7 @@ import streamlit as st
 from openai import OpenAI
 
 # Custom CSS for background, bot, and stars (without affecting chat UI)
-custom_css = """
+running_bot_animation = """
 <style>
 /* Space background with smooth animation */
 .stApp {
@@ -64,28 +64,27 @@ custom_css = """
 }
 
 /* Ensure chat remains visible */
-.stChatMessage {
-    z-index: 2;
+.stChatMessage, .stTextInput, .stTextArea {
+    z-index: 3;
     position: relative;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.85);
     border-radius: 10px;
     padding: 10px;
     margin: 10px 0;
     color: white;
 }
 
-/* Chat input styling */
-.stTextInput > div > div > input {
-    background-color: rgba(0, 0, 0, 0.7);
+/* Sidebar styling */
+.stSidebar {
+    z-index: 3;
+    background-color: rgba(0, 0, 0, 0.8);
     color: white;
-    border-radius: 10px;
-    border: 1px solid #555;
 }
 </style>
 """
 
 # Inject custom CSS
-st.markdown(custom_css, unsafe_allow_html=True)
+st.markdown(running_bot_animation, unsafe_allow_html=True)
 
 # Static HTML for stars and bot
 stars_html = "".join(
