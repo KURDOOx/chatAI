@@ -36,6 +36,7 @@ running_bot_animation = """
     background-size: contain;
     background-repeat: no-repeat;
     animation: run 8s linear infinite;
+    z-index: 1;
 }
 
 /* Stars styling */
@@ -46,7 +47,7 @@ running_bot_animation = """
     top: 0;
     left: 0;
     pointer-events: none;
-    z-index: -1;
+    z-index: 0;
 }
 
 .star {
@@ -54,6 +55,7 @@ running_bot_animation = """
     background: white;
     border-radius: 50%;
     opacity: 0.8;
+    animation: twinkle 2s infinite ease-in-out;
 }
 
 @keyframes twinkle {
@@ -66,17 +68,17 @@ running_bot_animation = """
 # Inject custom CSS
 st.markdown(running_bot_animation, unsafe_allow_html=True)
 
-# Static HTML for stars
+# Static HTML for stars and bot
 stars_html = "".join(
-    f'<div class="star" style="width:{size}px; height:{size}px; top:{top}%; left:{left}%; animation: twinkle {duration}s infinite;"></div>'
-    for size, top, left, duration in zip(
+    f'<div class="star" style="width:{size}px; height:{size}px; top:{top}%; left:{left}%;"></div>'
+    for size, top, left in zip(
         [2, 3, 4, 5, 6] * 10,
         range(5, 100, 10),
-        range(2, 100, 10),
-        [1.5, 2, 2.5, 3, 3.5] * 10,
+        range(2, 100, 10)
     )
 )
 st.markdown(f"<div class='stars'>{stars_html}</div>", unsafe_allow_html=True)
+st.markdown("<div class='bot'></div>", unsafe_allow_html=True)
 
 # Fetch API key from Streamlit secrets
 api_key = st.secrets["api_key"]
