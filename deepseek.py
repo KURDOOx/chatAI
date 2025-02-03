@@ -1,10 +1,9 @@
 import streamlit as st
-import openai
+from openai import OpenAI
 
-# Custom CSS for running bot, stars, and chat visibility
+# Custom CSS for running bot and stars
 running_bot_animation = """
 <style>
-/* Space background animation */
 .stApp {
     background: linear-gradient(-45deg, #000428, #004e92, #000428, #004e92);
     background-size: 400% 400%;
@@ -13,109 +12,140 @@ running_bot_animation = """
     overflow: hidden;
 }
 
-/* Flow animation */
 @keyframes gradientFlow {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 /* Running bot animation */
 @keyframes run {
-    0% { left: -10%; }
-    50% { left: 50%; }
-    100% { left: 110%; }
+    0% {
+        left: -100px;
+    }
+    100% {
+        left: 100%;
+    }
 }
 
 /* Bot styling */
 .bot {
-    position: fixed;
-    bottom: 10%;
-    left: -10%;
-    width: 80px;
-    height: 80px;
-    background-image: url('https://media.giphy.com/media/Qvx8xP2QHzjpa/giphy.gif'); /* Animated bot */
-    background-size: contain;
-    background-repeat: no-repeat;
-    animation: run 8s linear infinite;
+    position: absolute;
+    bottom: 20px;
+    width: 50px;
+    height: 50px;
+    background-image: url('https://cdn-icons-png.flaticon.com/512/4712/4712035.png'); /* Bot icon */
+    background-size: cover;
+    animation: run 10s linear infinite;
 }
 
-/* Stars */
-.stars {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    z-index: -1;
-}
-
-/* Star styling */
+/* Stars styling */
 .star {
     position: absolute;
     background: white;
     border-radius: 50%;
-    opacity: 0.8;
+    animation: twinkle 2s infinite ease-in-out;
 }
 
-/* Twinkle animation */
 @keyframes twinkle {
-    0%, 100% { opacity: 0.3; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.2); }
+    0%, 100% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
 }
 
-/* Restore chat visibility */
-.chat-container {
+/* Add stars dynamically */
+.stars {
     position: absolute;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.6); /* Dark overlay */
-    z-index: 1; /* Chat stays above background */
-    padding: 20px;
+    top: 0;
+    left: 0;
+    z-index: 0; /* Ensure stars are behind the chat */
+}
+
+/* Ensure chat area is visible */
+.stChatFadeIn {
+    z-index: 1; /* Bring chat area to the front */
+    position: relative;
 }
 
 /* Style the chat messages */
 .stChatMessage {
-    background-color: rgba(255, 255, 255, 0.1); /* Transparent chat bubbles */
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black background */
     border-radius: 10px;
     padding: 10px;
     margin: 10px 0;
     color: white; /* White text for better contrast */
 }
+
+/* Style the chat input */
+.stTextInput > div > div > input {
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black background */
+    color: white; /* White text */
+    border-radius: 10px;
+    border: 1px solid #555;
+}
+
+/* Style the sidebar */
+.stSidebar {
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black background */
+    border-radius: 10px;
+    padding: 10px;
+    color: white; /* White text */
+}
 </style>
 """
 
-# Inject custom CSS & running bot
+# Inject custom CSS
 st.markdown(running_bot_animation, unsafe_allow_html=True)
 
-# Static HTML for stars
-stars_html = "".join(
-    f'<div class="star" style="width:{size}px; height:{size}px; top:{top}%; left:{left}%; animation: twinkle {duration}s infinite;"></div>'
-    for size, top, left, duration in zip(
-        [2, 3, 4, 5, 6] * 10,  # Sizes
-        range(5, 100, 10),  # Random Y positions
-        range(2, 100, 10),  # Random X positions
-        [1.5, 2, 2.5, 3, 3.5] * 10,  # Twinkle speed
-    )
-)
+# Add the bot and stars using HTML
+st.markdown("""
+<div class="stars">
+    <!-- Stars are added dynamically with JavaScript -->
+</div>
+<div class="bot"></div>
+""", unsafe_allow_html=True)
 
-st.markdown(f'<div class="stars">{stars_html}</div>', unsafe_allow_html=True)
+# JavaScript to add stars dynamically
+st.markdown("""
+<script>
+function createStar() {
+    const star = document.createElement('div');
+    star.classList.add('star');
+    star.style.width = `${Math.random() * 5 + 2}px`;
+    star.style.height = star.style.width;
+    star.style.left = `${Math.random() * 100}%`;
+    star.style.top = `${Math.random() * 100}%`;
+    star.style.animationDuration = `${Math.random() * 2 + 1}s`;
+    document.querySelector('.stars').appendChild(star);
+}
 
-# Running bot
-st.markdown('<div class="bot"></div>', unsafe_allow_html=True)
+// Create 50 stars
+for (let i = 0; i < 50; i++) {
+    createStar();
+}
+</script>
+""", unsafe_allow_html=True)
 
-# Chat Overlay
-st.markdown('<div class="chat-container">', unsafe_allow_html=True)
-
-# Fetch API key from secrets
+# Fetch the API key from Streamlit secrets
 api_key = st.secrets["api_key"]
 
-# Initialize OpenAI client
-client = openai.OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key=api_key,
+# Initialize the OpenAI client
+client = OpenAI(
+  base_url="https://openrouter.ai/api/v1",
+  api_key=api_key,
 )
 
 # Streamlit app UI
@@ -124,19 +154,9 @@ st.title("🚀 DeepSeek Chatbot")
 # Sidebar for settings
 with st.sidebar:
     st.header("Settings")
-
-    # Store selected model in session state
-    if "selected_model" not in st.session_state:
-        st.session_state.selected_model = "deepseek/deepseek-r1:free"
-
-    st.session_state.selected_model = st.selectbox(
-        "Choose a model",
-        ["deepseek/deepseek-r1:free", "gpt-3.5-turbo"],
-        index=["deepseek/deepseek-r1:free", "gpt-3.5-turbo"].index(st.session_state.selected_model),
-    )
-
+    model = st.selectbox("Choose a model", ["deepseek/deepseek-r1:free", "gpt-3.5-turbo"])
     if st.button("Clear Chat"):
-        st.session_state.messages = [{"role": "assistant", "content": "Hello! How can I help you today?"}]
+        st.session_state.messages = []
 
 # Initialize session state for messages
 if "messages" not in st.session_state:
@@ -162,7 +182,7 @@ if prompt := st.chat_input("What is up?"):
                     "HTTP-Referer": "<YOUR_SITE_URL>",
                     "X-Title": "<YOUR_SITE_NAME>",
                 },
-                model=st.session_state.selected_model,
+                model=model,
                 messages=st.session_state.messages
             )
             ai_response = completion.choices[0].message.content
@@ -172,9 +192,6 @@ if prompt := st.chat_input("What is up?"):
 
     # Add AI response to session state
     st.session_state.messages.append({"role": "assistant", "content": ai_response})
-
-# Close chat overlay div
-st.markdown('</div>', unsafe_allow_html=True)
 
 # Footer
 st.markdown("---")
