@@ -5,7 +5,7 @@ from openai import OpenAI
 flowing_animation = """
 <style>
 .stApp {
-    background: url('https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExZnFxdXByNTA2cjk3MnBtMWN6OXh4ZmMyZmJnNTVvYWt3YjUzaW5uaSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/droteG2HmAhXi/giphy.gif') no-repeat center center fixed;
+    background: url('https://media4.giphy.com/media/VH8QBcXLrfz1u/giphy.gif') no-repeat center center fixed;
     background-size: cover;
 }
 
