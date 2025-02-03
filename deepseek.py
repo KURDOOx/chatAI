@@ -1,15 +1,14 @@
 import streamlit as st
 import openai
 
-# Custom CSS for running bot, stars, and chat visibility
-running_bot_animation = """
+# Custom CSS to fix layout issues
+fixed_css = """
 <style>
-/* Space background animation */
+/* Space Background */
 .stApp {
     background: linear-gradient(-45deg, #000428, #004e92, #000428, #004e92);
     background-size: 400% 400%;
     animation: gradientFlow 15s ease infinite;
-    position: relative;
     overflow: hidden;
 }
 
@@ -20,28 +19,7 @@ running_bot_animation = """
     100% { background-position: 0% 50%; }
 }
 
-/* Running bot animation */
-@keyframes run {
-    0% { left: -10%; }
-    50% { left: 50%; }
-    100% { left: 110%; }
-}
-
-/* Bot styling */
-.bot {
-    position: fixed;
-    bottom: 10%;
-    left: -10%;
-    width: 80px;
-    height: 80px;
-    background-image: url('https://media.giphy.com/media/Qvx8xP2QHzjpa/giphy.gif'); /* Animated bot */
-    background-size: contain;
-    background-repeat: no-repeat;
-    animation: run 8s linear infinite;
-    z-index: -1;
-}
-
-/* Stars */
+/* Stars Background */
 .stars {
     position: fixed;
     width: 100%;
@@ -65,31 +43,57 @@ running_bot_animation = """
     50% { opacity: 1; transform: scale(1.2); }
 }
 
-/* Ensure chat container is fully visible */
-.chat-container {
-    position: relative;
-    z-index: 1; /* Keep chat above background */
-    padding: 20px;
+/* Running bot animation */
+@keyframes run {
+    0% { left: -10%; }
+    50% { left: 50%; }
+    100% { left: 110%; }
 }
 
-/* Style the chat messages */
+/* Bot styling */
+.bot {
+    position: fixed;
+    bottom: 10%;
+    left: -10%;
+    width: 80px;
+    height: 80px;
+    background-image: url('https://media.giphy.com/media/Qvx8xP2QHzjpa/giphy.gif'); /* Animated bot */
+    background-size: contain;
+    background-repeat: no-repeat;
+    animation: run 8s linear infinite;
+    z-index: -1;
+}
+
+/* === FIX FOR CHAT VISIBILITY === */
+.chat-container {
+    position: relative;
+    z-index: 10; /* Chat is now ABOVE background */
+    background: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+    padding: 20px;
+    border-radius: 10px;
+    margin: auto;
+    max-width: 700px;
+    min-height: 400px;
+}
+
+/* Ensure chat messages are clearly visible */
 .stChatMessage {
     background-color: rgba(255, 255, 255, 0.1); /* Transparent chat bubbles */
     border-radius: 10px;
     padding: 10px;
     margin: 10px 0;
-    color: white; /* White text for better contrast */
+    color: white; /* White text */
 }
 
-/* Ensure chat input stays in place */
-.stTextInput {
-    z-index: 2 !important;
+/* Fix chat input visibility */
+.stChatInput {
+    z-index: 999 !important; /* Force it to stay on top */
 }
 </style>
 """
 
-# Inject custom CSS & running bot
-st.markdown(running_bot_animation, unsafe_allow_html=True)
+# Inject custom CSS
+st.markdown(fixed_css, unsafe_allow_html=True)
 
 # Static HTML for stars
 stars_html = "".join(
@@ -107,7 +111,7 @@ st.markdown(f'<div class="stars">{stars_html}</div>', unsafe_allow_html=True)
 # Running bot
 st.markdown('<div class="bot"></div>', unsafe_allow_html=True)
 
-# Chat Container (Ensures Chat UI is Visible)
+# Start Chat Container
 st.markdown('<div class="chat-container">', unsafe_allow_html=True)
 
 # Fetch API key from secrets
@@ -174,7 +178,7 @@ if prompt := st.chat_input("What is up?"):
     # Add AI response to session state
     st.session_state.messages.append({"role": "assistant", "content": ai_response})
 
-# Close chat overlay div
+# Close chat container
 st.markdown('</div>', unsafe_allow_html=True)
 
 # Footer
