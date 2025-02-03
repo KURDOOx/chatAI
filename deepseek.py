@@ -69,7 +69,6 @@ if "messages" not in st.session_state:
         {"role": "system", "content": "Your name is OST. You are a helpful AI assistant built by OST."},
         {"role": "assistant", "content": "Hello! How can I help you today?"}
     ]
-}]
 
 # Display previous messages
 for message in st.session_state.messages:
