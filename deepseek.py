@@ -1,48 +1,90 @@
 import streamlit as st
 import openai
 
-# Custom CSS for space background
-space_background = """
+# Custom CSS for running bot and stars
+running_bot_animation = """
 <style>
+/* Space background with smooth animation */
 .stApp {
-    background-image: url("https://www.esa.int/var/esa/storage/images/esa_multimedia/images/2023/09/webb_captures_iconic_ring_nebula_in_unprecedented_detail/25100348-1-eng-GB/Webb_captures_iconic_Ring_Nebula_in_unprecedented_detail_pillars.jpg");
-    background-size: cover;
-    background-position: center;
+    background: linear-gradient(-45deg, #000428, #004e92, #000428, #004e92);
+    background-size: 400% 400%;
+    animation: gradientFlow 15s ease infinite;
+    position: relative;
+    overflow: hidden;
+}
+
+@keyframes gradientFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Running bot animation */
+@keyframes run {
+    0% { left: -10%; }
+    50% { left: 50%; }
+    100% { left: 110%; }
+}
+
+/* Bot styling */
+.bot {
+    position: fixed;
+    bottom: 10%;
+    left: -10%;
+    width: 80px;
+    height: 80px;
+    background-image: url('https://media.giphy.com/media/Qvx8xP2QHzjpa/giphy.gif'); /* Animated bot */
+    background-size: contain;
     background-repeat: no-repeat;
-    background-attachment: fixed;
+    animation: run 8s linear infinite;
 }
 
-/* Style the chat messages */
-.stChatMessage {
-    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black background */
-    border-radius: 10px;
-    padding: 10px;
-    margin: 10px 0;
-    color: white; /* White text for better contrast */
+/* Stars */
+.stars {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: -1;
 }
 
-/* Style the chat input */
-.stTextInput > div > div > input {
-    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black background */
-    color: white; /* White text */
-    border-radius: 10px;
-    border: 1px solid #555;
+/* Star styling */
+.star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.8;
 }
 
-/* Style the sidebar */
-.stSidebar {
-    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent black background */
-    border-radius: 10px;
-    padding: 10px;
-    color: white; /* White text */
+/* Twinkle animation */
+@keyframes twinkle {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
 }
 </style>
 """
 
-# Inject custom CSS
-st.markdown(space_background, unsafe_allow_html=True)
+# Inject custom CSS & running bot
+st.markdown(running_bot_animation, unsafe_allow_html=True)
 
-# Fetch the API key from Streamlit secrets
+# Static HTML for stars
+stars_html = "".join(
+    f'<div class="star" style="width:{size}px; height:{size}px; top:{top}%; left:{left}%; animation: twinkle {duration}s infinite;"></div>'
+    for size, top, left, duration in zip(
+        [2, 3, 4, 5, 6] * 10,  # Sizes
+        range(5, 100, 10),  # Random Y positions
+        range(2, 100, 10),  # Random X positions
+        [1.5, 2, 2.5, 3, 3.5] * 10,  # Twinkle speed
+    )
+)
+
+st.markdown(f'<div class="stars">{stars_html}</div>', unsafe_allow_html=True)
+
+# Running bot
+st.markdown('<div class="bot"></div>', unsafe_allow_html=True)
+
+# Fetch API key from secrets
 api_key = st.secrets["api_key"]
 
 # Initialize OpenAI client
@@ -51,9 +93,8 @@ client = openai.OpenAI(
     api_key=api_key,
 )
 
-# Ensure messages exist in session state
-if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "assistant", "content": "Hello! How can I help you today?"}]
+# Streamlit app UI
+st.title("🚀 DeepSeek Chatbot")
 
 # Sidebar for settings
 with st.sidebar:
@@ -65,15 +106,16 @@ with st.sidebar:
 
     st.session_state.selected_model = st.selectbox(
         "Choose a model",
-        ["deepseek/deepseek-r1:free", "openai/gpt-3.5-turbo"],
-        index=["deepseek/deepseek-r1:free", "openai/gpt-3.5-turbo"].index(st.session_state.selected_model),
+        ["deepseek/deepseek-r1:free", "gpt-3.5-turbo"],
+        index=["deepseek/deepseek-r1:free", "gpt-3.5-turbo"].index(st.session_state.selected_model),
     )
 
     if st.button("Clear Chat"):
         st.session_state.messages = [{"role": "assistant", "content": "Hello! How can I help you today?"}]
 
-# Streamlit app UI
-st.title("🚀 DeepSeek Chatbot")
+# Initialize session state for messages
+if "messages" not in st.session_state:
+    st.session_state.messages = [{"role": "assistant", "content": "Hello! How can I help you today?"}]
 
 # Display previous messages
 for message in st.session_state.messages:
