@@ -1,18 +1,20 @@
 import streamlit as st
 import openai
 
-# Custom CSS to fix layout issues and restore space image
+# Custom CSS for full-site animated background
 running_bot_animation = """
 <style>
-/* Space background with smooth animation */
-.stApp {
-    background: linear-gradient(-45deg, #000428, #004e92, #000428, #004e92);
-    background-size: 400% 400%;
-    animation: gradientFlow 15s ease infinite;
+/* === Full-Site Animated Background === */
+html, body, .stApp {
+    background: linear-gradient(-45deg, #000428, #004e92, #000428, #004e92) !important;
+    background-size: 400% 400% !important;
+    animation: gradientFlow 15s ease infinite !important;
     position: relative;
     overflow: hidden;
+    height: 100vh;
 }
 
+/* Flow animation */
 @keyframes gradientFlow {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
@@ -37,6 +39,7 @@ running_bot_animation = """
     background-size: contain;
     background-repeat: no-repeat;
     animation: run 8s linear infinite;
+    z-index: -1;
 }
 
 /* Stars */
@@ -46,7 +49,7 @@ running_bot_animation = """
     height: 100%;
     top: 0;
     left: 0;
-    z-index: -1;
+    z-index: -2;
 }
 
 /* Star styling */
@@ -83,18 +86,6 @@ st.markdown(f'<div class="stars">{stars_html}</div>', unsafe_allow_html=True)
 
 # Running bot
 st.markdown('<div class="bot"></div>', unsafe_allow_html=True)
-
-# Start Chat Container
-st.markdown('<div class="chat-container">', unsafe_allow_html=True)
-
-# Fetch API key from secrets
-api_key = st.secrets["api_key"]
-
-# Initialize OpenAI client
-client = openai.OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key=api_key,
-)
 
 # Streamlit app UI
 st.title("🚀 DeepSeek Chatbot")
@@ -150,9 +141,6 @@ if prompt := st.chat_input("What is up?"):
 
     # Add AI response to session state
     st.session_state.messages.append({"role": "assistant", "content": ai_response})
-
-# Close chat container
-st.markdown('</div>', unsafe_allow_html=True)
 
 # Footer
 st.markdown("---")
