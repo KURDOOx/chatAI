@@ -1,7 +1,7 @@
 import streamlit as st
 import openai
 
-# Custom CSS for full-site animated background
+# Custom CSS to apply full-site background without breaking chat
 running_bot_animation = """
 <style>
 /* === Full-Site Animated Background === */
