@@ -2,16 +2,21 @@ import streamlit as st
 import openai
 
 # Custom CSS to fix layout issues and restore space image
-fixed_css = """
+running_bot_animation = """
 <style>
-/* === Restore the Space Background === */
+/* Space background with smooth animation */
 .stApp {
-    background-image: url("https://www.esa.int/var/esa/storage/images/esa_multimedia/images/2023/09/webb_captures_iconic_ring_nebula_in_unprecedented_detail/25100348-1-eng-GB/Webb_captures_iconic_Ring_Nebula_in_unprecedented_detail_pillars.jpg");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+    background: linear-gradient(-45deg, #000428, #004e92, #000428, #004e92);
+    background-size: 400% 400%;
+    animation: gradientFlow 15s ease infinite;
+    position: relative;
     overflow: hidden;
+}
+
+@keyframes gradientFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 /* Running bot animation */
@@ -32,7 +37,6 @@ fixed_css = """
     background-size: contain;
     background-repeat: no-repeat;
     animation: run 8s linear infinite;
-    z-index: -1;
 }
 
 /* Stars */
@@ -42,7 +46,7 @@ fixed_css = """
     height: 100%;
     top: 0;
     left: 0;
-    z-index: -2;
+    z-index: -1;
 }
 
 /* Star styling */
@@ -58,37 +62,11 @@ fixed_css = """
     0%, 100% { opacity: 0.3; transform: scale(1); }
     50% { opacity: 1; transform: scale(1.2); }
 }
-
-/* === FIX FOR CHAT VISIBILITY === */
-.chat-container {
-    position: relative;
-    z-index: 10; /* Chat is now ABOVE background */
-    background: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
-    padding: 20px;
-    border-radius: 10px;
-    margin: auto;
-    max-width: 700px;
-    min-height: 400px;
-}
-
-/* Ensure chat messages are clearly visible */
-.stChatMessage {
-    background-color: rgba(255, 255, 255, 0.1); /* Transparent chat bubbles */
-    border-radius: 10px;
-    padding: 10px;
-    margin: 10px 0;
-    color: white; /* White text */
-}
-
-/* Fix chat input visibility */
-.stChatInput {
-    z-index: 999 !important; /* Force it to stay on top */
-}
 </style>
 """
 
 # Inject custom CSS
-st.markdown(fixed_css, unsafe_allow_html=True)
+st.markdown(running_bot_animation, unsafe_allow_html=True)
 
 # Static HTML for stars
 stars_html = "".join(
