@@ -5,21 +5,8 @@ from openai import OpenAI
 flowing_animation = """
 <style>
 .stApp {
-    background: linear-gradient(-45deg, #000428, #004e92, #000428, #004e92);
-    background-size: 400% 400%;
-    animation: gradientFlow 15s ease infinite;
-}
-
-@keyframes gradientFlow {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
+    background: url('https://media4.giphy.com/media/VH8QBcXLrfz1u/giphy.gif') no-repeat center center fixed;
+    background-size: cover;
 }
 
 /* Style the chat messages */
@@ -48,6 +35,10 @@ flowing_animation = """
 }
 </style>
 """
+
+# Inject custom CSS
+st.markdown(flowing_animation, unsafe_allow_html=True)
+
 
 # Inject custom CSS
 st.markdown(flowing_animation, unsafe_allow_html=True)
