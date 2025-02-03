@@ -3,7 +3,7 @@ from openai import OpenAI
 
 client = OpenAI(
   base_url="https://openrouter.ai/api/v1",
-  api_key="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",
+  api_key=,
 )
 
 st.title("DeepSeek Chatbot")
