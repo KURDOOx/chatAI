@@ -1,14 +1,15 @@
 import streamlit as st
 from openai import OpenAI
 
-# Custom CSS for flowing animation
-flowing_animation = """
+# Custom CSS for running bot and stars
+running_bot_animation = """
 <style>
-/* Space background with animation */
 .stApp {
     background: linear-gradient(-45deg, #000428, #004e92, #000428, #004e92);
     background-size: 400% 400%;
     animation: gradientFlow 15s ease infinite;
+    position: relative;
+    overflow: hidden;
 }
 
 @keyframes gradientFlow {
@@ -21,6 +22,55 @@ flowing_animation = """
     100% {
         background-position: 0% 50%;
     }
+}
+
+/* Running bot animation */
+@keyframes run {
+    0% {
+        left: -100px;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+/* Bot styling */
+.bot {
+    position: absolute;
+    bottom: 20px;
+    width: 50px;
+    height: 50px;
+    background-image: url('https://cdn-icons-png.flaticon.com/512/4712/4712035.png'); /* Bot icon */
+    background-size: cover;
+    animation: run 10s linear infinite;
+}
+
+/* Stars styling */
+.star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle 2s infinite ease-in-out;
+}
+
+@keyframes twinkle {
+    0%, 100% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+/* Add stars dynamically */
+.stars {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
 }
 
 /* Style the chat messages */
@@ -47,29 +97,40 @@ flowing_animation = """
     padding: 10px;
     color: white; /* White text */
 }
-
-/* Robot Animation */
-.robot {
-    position: fixed;
-    bottom: 10%;
-    left: 10%;
-    width: 100px;
-    animation: moveRobot 10s linear infinite;
-}
-
-@keyframes moveRobot {
-    0% { left: 10%; transform: rotateY(0deg); }
-    50% { left: 80%; transform: rotateY(180deg); }
-    100% { left: 10%; transform: rotateY(0deg); }
-}
 </style>
-
-<!-- Robot GIF -->
-<img src="https://media.giphy.com/media/jUwpNzg9IcyrK/giphy.gif" class="robot">
 """
 
 # Inject custom CSS
-st.markdown(flowing_animation, unsafe_allow_html=True)
+st.markdown(running_bot_animation, unsafe_allow_html=True)
+
+# Add the bot and stars using HTML
+st.markdown("""
+<div class="stars">
+    <!-- Stars are added dynamically with JavaScript -->
+</div>
+<div class="bot"></div>
+""", unsafe_allow_html=True)
+
+# JavaScript to add stars dynamically
+st.markdown("""
+<script>
+function createStar() {
+    const star = document.createElement('div');
+    star.classList.add('star');
+    star.style.width = `${Math.random() * 5 + 2}px`;
+    star.style.height = star.style.width;
+    star.style.left = `${Math.random() * 100}%`;
+    star.style.top = `${Math.random() * 100}%`;
+    star.style.animationDuration = `${Math.random() * 2 + 1}s`;
+    document.querySelector('.stars').appendChild(star);
+}
+
+// Create 50 stars
+for (let i = 0; i < 50; i++) {
+    createStar();
+}
+</script>
+""", unsafe_allow_html=True)
 
 # Fetch the API key from Streamlit secrets
 api_key = st.secrets["api_key"]
