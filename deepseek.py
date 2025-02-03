@@ -1,46 +1,17 @@
 import streamlit as st
 import openai
 
-# Custom CSS to fix layout issues
+# Custom CSS to fix layout issues and restore space image
 fixed_css = """
 <style>
-/* Space Background */
+/* === Restore the Space Background === */
 .stApp {
-    background: linear-gradient(-45deg, #000428, #004e92, #000428, #004e92);
-    background-size: 400% 400%;
-    animation: gradientFlow 15s ease infinite;
+    background-image: url("https://www.esa.int/var/esa/storage/images/esa_multimedia/images/2023/09/webb_captures_iconic_ring_nebula_in_unprecedented_detail/25100348-1-eng-GB/Webb_captures_iconic_Ring_Nebula_in_unprecedented_detail_pillars.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     overflow: hidden;
-}
-
-/* Flow animation */
-@keyframes gradientFlow {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-/* Stars Background */
-.stars {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    z-index: -2;
-}
-
-/* Star styling */
-.star {
-    position: absolute;
-    background: white;
-    border-radius: 50%;
-    opacity: 0.8;
-}
-
-/* Twinkle animation */
-@keyframes twinkle {
-    0%, 100% { opacity: 0.3; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.2); }
 }
 
 /* Running bot animation */
@@ -62,6 +33,30 @@ fixed_css = """
     background-repeat: no-repeat;
     animation: run 8s linear infinite;
     z-index: -1;
+}
+
+/* Stars */
+.stars {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: -2;
+}
+
+/* Star styling */
+.star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.8;
+}
+
+/* Twinkle animation */
+@keyframes twinkle {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
 }
 
 /* === FIX FOR CHAT VISIBILITY === */
