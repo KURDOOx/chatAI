@@ -1,10 +1,10 @@
 import streamlit as st
 import openai
 
-# Custom CSS for running bot and stars
+# Custom CSS for running bot, stars, and chat visibility
 running_bot_animation = """
 <style>
-/* Space background with smooth animation */
+/* Space background animation */
 .stApp {
     background: linear-gradient(-45deg, #000428, #004e92, #000428, #004e92);
     background-size: 400% 400%;
@@ -13,6 +13,7 @@ running_bot_animation = """
     overflow: hidden;
 }
 
+/* Flow animation */
 @keyframes gradientFlow {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
@@ -62,6 +63,27 @@ running_bot_animation = """
     0%, 100% { opacity: 0.3; transform: scale(1); }
     50% { opacity: 1; transform: scale(1.2); }
 }
+
+/* Restore chat visibility */
+.chat-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* Dark overlay */
+    z-index: 1; /* Chat stays above background */
+    padding: 20px;
+}
+
+/* Style the chat messages */
+.stChatMessage {
+    background-color: rgba(255, 255, 255, 0.1); /* Transparent chat bubbles */
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px 0;
+    color: white; /* White text for better contrast */
+}
 </style>
 """
 
@@ -83,6 +105,9 @@ st.markdown(f'<div class="stars">{stars_html}</div>', unsafe_allow_html=True)
 
 # Running bot
 st.markdown('<div class="bot"></div>', unsafe_allow_html=True)
+
+# Chat Overlay
+st.markdown('<div class="chat-container">', unsafe_allow_html=True)
 
 # Fetch API key from secrets
 api_key = st.secrets["api_key"]
@@ -147,6 +172,9 @@ if prompt := st.chat_input("What is up?"):
 
     # Add AI response to session state
     st.session_state.messages.append({"role": "assistant", "content": ai_response})
+
+# Close chat overlay div
+st.markdown('</div>', unsafe_allow_html=True)
 
 # Footer
 st.markdown("---")
