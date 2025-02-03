@@ -1,14 +1,16 @@
 import streamlit as st
-from openai import OpenAI
+import openai
 
-# Custom CSS for background, bot, and stars (without affecting chat UI)
+# Custom CSS for running bot and stars
 running_bot_animation = """
 <style>
-/* Background gradient animation */
+/* Space background with smooth animation */
 .stApp {
     background: linear-gradient(-45deg, #000428, #004e92, #000428, #004e92);
     background-size: 400% 400%;
     animation: gradientFlow 15s ease infinite;
+    position: relative;
+    overflow: hidden;
 }
 
 @keyframes gradientFlow {
@@ -19,58 +21,74 @@ running_bot_animation = """
 
 /* Running bot animation */
 @keyframes run {
-    0% { left: -100px; }
-    100% { left: 100%; }
+    0% { left: -10%; }
+    50% { left: 50%; }
+    100% { left: 110%; }
 }
 
+/* Bot styling */
 .bot {
     position: fixed;
-    bottom: 20px;
-    width: 50px;
-    height: 50px;
-    background-image: url('https://cdn-icons-png.flaticon.com/512/4712/4712035.png');
-    background-size: cover;
-    animation: run 10s linear infinite;
+    bottom: 10%;
+    left: -10%;
+    width: 80px;
+    height: 80px;
+    background-image: url('https://media.giphy.com/media/Qvx8xP2QHzjpa/giphy.gif'); /* Animated bot */
+    background-size: contain;
+    background-repeat: no-repeat;
+    animation: run 8s linear infinite;
 }
 
-/* Stars styling */
-.star {
-    position: absolute;
-    background: white;
-    border-radius: 50%;
-    animation: twinkle 2s infinite ease-in-out;
-}
-
-@keyframes twinkle {
-    0%, 100% { opacity: 0.5; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.2); }
-}
-
+/* Stars */
 .stars {
     position: fixed;
     width: 100%;
     height: 100%;
     top: 0;
     left: 0;
-    pointer-events: none;
+    z-index: -1;
+}
+
+/* Star styling */
+.star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.8;
+}
+
+/* Twinkle animation */
+@keyframes twinkle {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
 }
 </style>
 """
 
-# Inject custom CSS
+# Inject custom CSS & running bot
 st.markdown(running_bot_animation, unsafe_allow_html=True)
 
-# Add stars and bot using HTML
-st.markdown("""
-<div class="stars"></div>
-<div class="bot"></div>
-""", unsafe_allow_html=True)
+# Static HTML for stars
+stars_html = "".join(
+    f'<div class="star" style="width:{size}px; height:{size}px; top:{top}%; left:{left}%; animation: twinkle {duration}s infinite;"></div>'
+    for size, top, left, duration in zip(
+        [2, 3, 4, 5, 6] * 10,  # Sizes
+        range(5, 100, 10),  # Random Y positions
+        range(2, 100, 10),  # Random X positions
+        [1.5, 2, 2.5, 3, 3.5] * 10,  # Twinkle speed
+    )
+)
 
-# Fetch API key from Streamlit secrets
+st.markdown(f'<div class="stars">{stars_html}</div>', unsafe_allow_html=True)
+
+# Running bot
+st.markdown('<div class="bot"></div>', unsafe_allow_html=True)
+
+# Fetch API key from secrets
 api_key = st.secrets["api_key"]
 
 # Initialize OpenAI client
-client = OpenAI(
+client = openai.OpenAI(
     base_url="https://openrouter.ai/api/v1",
     api_key=api_key,
 )
@@ -81,9 +99,19 @@ st.title("🚀 DeepSeek Chatbot")
 # Sidebar for settings
 with st.sidebar:
     st.header("Settings")
-    model = st.selectbox("Choose a model", ["deepseek/deepseek-r1:free", "gpt-3.5-turbo"])
+
+    # Store selected model in session state
+    if "selected_model" not in st.session_state:
+        st.session_state.selected_model = "deepseek/deepseek-r1:free"
+
+    st.session_state.selected_model = st.selectbox(
+        "Choose a model",
+        ["deepseek/deepseek-r1:free", "gpt-3.5-turbo"],
+        index=["deepseek/deepseek-r1:free", "gpt-3.5-turbo"].index(st.session_state.selected_model),
+    )
+
     if st.button("Clear Chat"):
-        st.session_state.messages = []
+        st.session_state.messages = [{"role": "assistant", "content": "Hello! How can I help you today?"}]
 
 # Initialize session state for messages
 if "messages" not in st.session_state:
@@ -96,10 +124,12 @@ for message in st.session_state.messages:
 
 # Get user input
 if prompt := st.chat_input("What is up?"):
+    # Add user message to session state
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
+    # Generate AI response
     with st.chat_message("assistant"):
         try:
             completion = client.chat.completions.create(
@@ -107,14 +137,15 @@ if prompt := st.chat_input("What is up?"):
                     "HTTP-Referer": "<YOUR_SITE_URL>",
                     "X-Title": "<YOUR_SITE_NAME>",
                 },
-                model=model,
+                model=st.session_state.selected_model,
                 messages=st.session_state.messages
             )
             ai_response = completion.choices[0].message.content
         except Exception as e:
             ai_response = f"An error occurred: {str(e)}"
         st.markdown(ai_response)
-    
+
+    # Add AI response to session state
     st.session_state.messages.append({"role": "assistant", "content": ai_response})
 
 # Footer
